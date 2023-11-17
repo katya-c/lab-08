@@ -17,10 +17,10 @@ weather <- read.csv("data/weatherAUS.csv", header = TRUE)
 
 # Exercise 1: Exploratory Data Analysis
 
-We will start by transform any character variables that need to be transformed into categorical. Use the following code to identify them and trasform them into factors.
+We will start by transform any character variables that need to be transformed into categorical. Use the following code to identify them and transform them into factors.
 
 ```{r mutate-char}
-weather %>% 
+variables_to_transform <- weather %>% 
   select(where(is.character),-Date) %>% names()
 weather <- weather %>% 
   mutate_at(vars(all_of(variables_to_transform)),factor)
@@ -46,6 +46,8 @@ weather %>%
 1. Are there any missing values in our variable of interest `RainTomorrow`? If so, we filter them out and save the new dataset as `weather_noNA`. 
 
 ```{r}
+weather_noNA <- weather%>%
+  filter(is.na(RainTomorrow) == FALSE)
 
 ```
 
@@ -53,28 +55,54 @@ weather %>%
 
 ```{r}
 
+weather_noNA%>%
+  group_by(Location)%>%
+  count(RainToday)%>%
+  filter(RainToday == "Yes")%>%
+  arrange(desc(n))
+
 ```
+
+_1. Comment: The city with the most rain days is Portland._
+
 
 # Exercise 2: Logistic regression
 
 We will focus our analysis on the city of `Portland`.
 
 ```{r}
-weather_Portland <- weather %>%
+weather_Portland <- weather_noNA %>%
   filter(Location == "Portland")
 ```
 
 1. Try to predict `RainTomorrow` by fitting a linear regression using the variable `RainToday` and print the output using `tidy()`.
 
 ```{r}
+rain_tmrw_tdy_fit <- logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(RainTomorrow ~ RainToday, data = weather_Portland)
+
+  tidy(rain_tmrw_tdy_fit)
+
 
 ```
+
+RainTomorrow = v
+
 
 2. For each point in our dataset, what are the fitted probabilities that tomorrow it's going to rain? 
 
 - Plot them using an appropriate visualization. What is peculiar about them?
 
 ```{r}
+
+weather_Portland%>%
+  ggplot(mapping = aes(
+    x = 
+)) +
+  
+  geom_histogram()
+
 
 ```
 
